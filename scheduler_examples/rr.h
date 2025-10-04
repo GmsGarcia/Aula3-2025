@@ -1,8 +1,10 @@
-#ifndef SJF_H
-#define SJF_H
+#ifndef RR_H
+#define RR_H
 
 #include "queue.h"
 
-void sjf_scheduler(uint32_t current_time_ms, queue_t *rq, pcb_t **cpu_task);
+#define TIME_QUANTUM_MS 500
 
-#endif //SJF_H
+void rr_scheduler(uint32_t current_time_ms, queue_t *rq, pcb_t **cpu_task);
+
+#endif //RR_H

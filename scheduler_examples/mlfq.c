@@ -1,4 +1,4 @@
-#include "rr.h"
+#include "mlfq.h"
 
 #include <stdio.h>
 #include <stdlib.h>
@@ -7,9 +7,9 @@
 #include <unistd.h>
 
 /**
- * @brief Round Robin (RR) scheduling algorithm.
+ * @brief Multilevel Feedback Queue (MLFQ) scheduling algorithm.
  *
- * This function implements the RR scheduling algorithm. If the CPU is not idle it
+ * This function implements the MLFQ scheduling algorithm. If the CPU is not idle it
  * checks if the application is ready and frees the CPU.
  * TODO: description
  *
@@ -18,7 +18,7 @@
  * @param cpu_task Double pointer to the currently running task. This will be updated
  *                 to point to the next task to run.
  */
-void rr_scheduler(uint32_t current_time_ms, queue_t *rq, pcb_t **cpu_task) {
+void mlfq_scheduler(uint32_t current_time_ms, queue_t *rq, pcb_t **cpu_task) {
     if (*cpu_task) {
         (*cpu_task)->ellapsed_time_ms += TICKS_MS;      // Add to the running time of the application/task
 
