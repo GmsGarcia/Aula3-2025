@@ -6,6 +6,27 @@
 #include "msg.h"
 #include <unistd.h>
 
+#include "debug.h"
+
+static const int QUANTA[MLFQ_LEVELS] = { 50, 100, 200 }; // ms per level
+
+static queue_t mlfq_queues[MLFQ_LEVELS]; // priority-based queues
+
+/**
+ * Pick next process from highest-priority non-empty queue.
+ */
+static pcb_t *mlfq_next_task(uint32_t current_time_ms) {
+    for (int i = 0; i < MLFQ_LEVELS; i++) {
+        pcb_t *t = dequeue_pcb(&mlfq_queues[i]);
+        if (t != NULL) {
+            t->slice_start_ms = current_time_ms;
+            t->priority = i;
+            return t;
+        }
+    }
+    return NULL; // all queues empty
+}
+
 /**
  * @brief Multilevel Feedback Queue (MLFQ) scheduling algorithm.
  *
@@ -19,12 +40,17 @@
  *                 to point to the next task to run.
  */
 void mlfq_scheduler(uint32_t current_time_ms, queue_t *rq, pcb_t **cpu_task) {
+    // move all tasks from global ready_queue into MLFQ level 0
+    while (rq->head != NULL) {
+        pcb_t *t = dequeue_pcb(rq);
+        t->priority = 0;
+        enqueue_pcb(&mlfq_queues[0], t);
+    }
+
     if (*cpu_task) {
-        (*cpu_task)->ellapsed_time_ms += TICKS_MS;      // Add to the running time of the application/task
+        (*cpu_task)->ellapsed_time_ms += TICKS_MS;
 
         if ((*cpu_task)->ellapsed_time_ms >= (*cpu_task)->time_ms) {
-            // Task finished
-            // Send msg to application
             msg_t msg = {
                 .pid = (*cpu_task)->pid,
                 .request = PROCESS_REQUEST_DONE,
@@ -33,23 +59,27 @@ void mlfq_scheduler(uint32_t current_time_ms, queue_t *rq, pcb_t **cpu_task) {
             if (write((*cpu_task)->sockfd, &msg, sizeof(msg_t)) != sizeof(msg_t)) {
                 perror("write");
             }
-            // Application finished and can be removed
-            free((*cpu_task));
-            (*cpu_task) = NULL;
-        } else if ((current_time_ms - (*cpu_task)->slice_start_ms) >= TIME_QUANTUM_MS) {
-            // time slice is up!
-            // run next pcb
+
+            free(*cpu_task);
+            *cpu_task = NULL;
+        } else if ((current_time_ms - (*cpu_task)->slice_start_ms) >= QUANTA[(*cpu_task)->priority]) {
+            int new_level = (*cpu_task)->priority < (MLFQ_LEVELS - 1) ? (*cpu_task)->priority + 1 : (*cpu_task)->priority;
             (*cpu_task)->slice_start_ms = 0;
-            enqueue_pcb(rq, *cpu_task);
-            (*cpu_task) = NULL;
+
+            enqueue_pcb(&mlfq_queues[new_level], *cpu_task);
+            DBG("Process %d demoted to level %d\n", (*cpu_task)->pid, new_level);
+
+            *cpu_task = NULL;
         }
     }
 
-    if (*cpu_task == NULL) {            // If CPU is idle
-        *cpu_task = dequeue_pcb(rq);   // Get next task from ready queue (dequeue from head)
-
+    if (*cpu_task == NULL) {  // If CPU idle, pick next task
+        *cpu_task = mlfq_next_task(current_time_ms);
         if (*cpu_task) {
-            (*cpu_task)->slice_start_ms = current_time_ms;
+            DBG("Scheduled process %d at level %d (quantum=%d)\n",
+                (*cpu_task)->pid,
+                (*cpu_task)->priority,
+                QUANTA[(*cpu_task)->priority]);
         }
     }
 }

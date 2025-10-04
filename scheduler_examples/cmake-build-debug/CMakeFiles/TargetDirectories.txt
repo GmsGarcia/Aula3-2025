@@ -1,0 +1,5 @@
+/mnt/c/Users/gmsga/CLionProjects/Aula3-2025/scheduler_examples/cmake-build-debug/CMakeFiles/scheduler.dir
+/mnt/c/Users/gmsga/CLionProjects/Aula3-2025/scheduler_examples/cmake-build-debug/CMakeFiles/app.dir
+/mnt/c/Users/gmsga/CLionProjects/Aula3-2025/scheduler_examples/cmake-build-debug/CMakeFiles/app-io.dir
+/mnt/c/Users/gmsga/CLionProjects/Aula3-2025/scheduler_examples/cmake-build-debug/CMakeFiles/edit_cache.dir
+/mnt/c/Users/gmsga/CLionProjects/Aula3-2025/scheduler_examples/cmake-build-debug/CMakeFiles/rebuild_cache.dir
