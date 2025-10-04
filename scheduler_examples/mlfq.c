@@ -67,19 +67,12 @@ void mlfq_scheduler(uint32_t current_time_ms, queue_t *rq, pcb_t **cpu_task) {
             (*cpu_task)->slice_start_ms = 0;
 
             enqueue_pcb(&mlfq_queues[new_level], *cpu_task);
-            DBG("Process %d demoted to level %d\n", (*cpu_task)->pid, new_level);
 
             *cpu_task = NULL;
         }
     }
 
-    if (*cpu_task == NULL) {  // If CPU idle, pick next task
+    if (*cpu_task == NULL) {
         *cpu_task = mlfq_next_task(current_time_ms);
-        if (*cpu_task) {
-            DBG("Scheduled process %d at level %d (quantum=%d)\n",
-                (*cpu_task)->pid,
-                (*cpu_task)->priority,
-                QUANTA[(*cpu_task)->priority]);
-        }
     }
 }
