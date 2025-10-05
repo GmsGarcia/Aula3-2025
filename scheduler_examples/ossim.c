@@ -151,6 +151,7 @@ void check_new_commands(queue_t *command_queue, queue_t *blocked_queue,
       current_pcb->pid = msg.pid; // Set the pid from the message
       current_pcb->time_ms = msg.time_ms;
       current_pcb->ellapsed_time_ms = 0;
+      current_pcb->received_time_ms = current_time_ms;
       current_pcb->status = TASK_RUNNING;
       enqueue_pcb(ready_queue, current_pcb);
       DBG("Process %d requested RUN for %d ms\n", current_pcb->pid,

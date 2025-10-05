@@ -29,7 +29,8 @@ void sjf_scheduler(uint32_t current_time_ms, queue_t *rq, pcb_t **cpu_task) {
             msg_t msg = {
                 .pid = (*cpu_task)->pid,
                 .request = PROCESS_REQUEST_DONE,
-                .time_ms = current_time_ms
+                .time_ms = current_time_ms,
+                .start_time_ms = (*cpu_task)->start_time_ms
             };
             if (write((*cpu_task)->sockfd, &msg, sizeof(msg_t)) != sizeof(msg_t)) {
                 perror("write");
@@ -64,6 +65,12 @@ void sjf_scheduler(uint32_t current_time_ms, queue_t *rq, pcb_t **cpu_task) {
             remove_queue_elem(rq, sj);
             *cpu_task = sj->pcb;
             free(sj);
+
+            if (*cpu_task) {
+                if ((*cpu_task)->start_time_ms == -1) {
+                    (*cpu_task)->start_time_ms = current_time_ms - (*cpu_task)->received_time_ms;
+                }
+            }
         }
         /*
         if (sj) {

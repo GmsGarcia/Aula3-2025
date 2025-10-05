@@ -15,6 +15,8 @@ typedef struct pcb_st{
     int32_t pid;                   // Process ID
     task_status_en status;         // Current status of the task defined by the pcb
     uint32_t time_ms;              // Time requested by application in milliseconds
+    uint32_t received_time_ms;
+    uint32_t start_time_ms;
     uint32_t ellapsed_time_ms;     // Time ellapsed since start in milliseconds
     uint32_t slice_start_ms;       // Time when the current time slice started
     uint32_t sockfd;               // Socket file descriptor for communication with the application

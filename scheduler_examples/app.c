@@ -102,9 +102,10 @@ int main(int argc, char *argv[]) {
     double real = (msg.time_ms - start_time_ms)/1000.0;
     double user = (double)time_s;
     double sys = real - time_s;
+    double res = (double)msg.start_time_ms/1000;
 
-    printf("Application %s (PID %d) finished at time %d ms, Elapsed: %.03f seconds, CPU: %.03f seconds\n",
-           app_name, pid, msg.time_ms, real, user);
+    printf("Application %s (PID %d) finished at time %d ms, Elapsed: %.03f seconds, CPU: %.03f seconds, Response: %.03f seconds\n",
+           app_name, pid, msg.time_ms, real, user, res);
 
     close(sockfd);
     return EXIT_SUCCESS;

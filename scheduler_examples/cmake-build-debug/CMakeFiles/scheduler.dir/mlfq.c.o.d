@@ -59,4 +59,5 @@ CMakeFiles/scheduler.dir/mlfq.c.o: \
  /usr/include/x86_64-linux-gnu/bits/confname.h \
  /usr/include/x86_64-linux-gnu/bits/getopt_posix.h \
  /usr/include/x86_64-linux-gnu/bits/getopt_core.h \
- /usr/include/x86_64-linux-gnu/bits/unistd_ext.h
+ /usr/include/x86_64-linux-gnu/bits/unistd_ext.h \
+ /mnt/c/Users/gmsga/CLionProjects/Aula3-2025/scheduler_examples/debug.h
